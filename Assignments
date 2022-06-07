@@ -1,0 +1,80 @@
+[root@ip-172-31-31-82 ~]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-vzznb        2/2     Running   0          95m
+redis-868d64d78-m25dx     2/2     Running   0          104m
+result-5d57b59f4b-zm5km   2/2     Running   0          86m
+vote-94849dc97-29lq2      2/2     Running   0          101m
+worker-dd46d7584-qt8w5    2/2     Running   0          74m
+
+[root@ip-172-31-31-82 ~]# kubectl delete po vote-94849dc97-7k64z
+pod "vote-94849dc97-7k64z" deleted
+[root@ip-172-31-31-82 ~]# kubectl get pods
+NAME                      READY   STATUS        RESTARTS   AGE
+db-b54cd94f4-vzznb        2/2     Running       0          100m
+redis-868d64d78-m25dx     2/2     Running       0          109m
+result-5d57b59f4b-nnw44   2/2     Running       0          67s
+vote-94849dc97-7k64z      2/2     Terminating   0          2m57s
+vote-94849dc97-8d8fr      2/2     Running       0          3s
+worker-dd46d7584-qt8w5    2/2     Running       0          79m
+
+OBSERVATION - Upon deleting the vote pod a new pod gets created and the application 
+works fine
+
+[root@ip-172-31-31-82 ~]# kubectl delete po result-5d57b59f4b-zm5km
+pod "result-5d57b59f4b-zm5km" deleted
+[root@ip-172-31-31-82 ~]# kubectl get pods
+NAME                      READY   STATUS        RESTARTS   AGE
+db-b54cd94f4-vzznb        2/2     Running       0          99m
+redis-868d64d78-m25dx     2/2     Running       0          108m
+result-5d57b59f4b-nnw44   2/2     Running       0          16s
+result-5d57b59f4b-zm5km   2/2     Terminating   0          90m
+vote-94849dc97-7k64z      2/2     Running       0          2m6s
+worker-dd46d7584-qt8w5    2/2     Running       0          79m
+
+OBSERVATION - Upon deleting the result pod a new pod gets created and the application 
+works fine.
+
+[root@ip-172-31-31-82 ~]# kubectl delete po worker-dd46d7584-qt8w5
+pod "worker-dd46d7584-qt8w5" deleted
+[root@ip-172-31-31-82 ~]# kubectl get pods
+NAME                      READY   STATUS            RESTARTS   AGE
+db-b54cd94f4-vzznb        2/2     Running           0          102m
+redis-868d64d78-m25dx     2/2     Running           0          112m
+result-5d57b59f4b-nnw44   2/2     Running           0          3m39s
+vote-94849dc97-8d8fr      2/2     Running           0          2m35s
+worker-dd46d7584-kvp59    0/2     PodInitializing   0          4s
+worker-dd46d7584-qt8w5    2/2     Terminating       0          82m
+
+OBSERVATION - Upon deleting the worker pod a new pod gets created and the application 
+works fine.
+
+[root@ip-172-31-31-82 ~]# kubectl delete po db-b54cd94f4-vzznb
+pod "db-b54cd94f4-vzznb" deleted
+
+[root@ip-172-31-31-82 ~]# kubectl get pods
+NAME                      READY   STATUS        RESTARTS   AGE
+db-b54cd94f4-crtkv        1/2     Running       0          5s
+db-b54cd94f4-vzznb        2/2     Terminating   0          105m
+redis-868d64d78-m25dx     2/2     Running       0          114m
+result-5d57b59f4b-nnw44   2/2     Running       0          6m3s
+vote-94849dc97-8d8fr      2/2     Running       0          4m59s
+worker-dd46d7584-kvp59    2/2     Running       0          2m28s
+[root@ip-172-31-31-82 ~]#
+
+OBSERVATION - Upon deleting the db pod a new pod gets created but the application 
+doesnot contain/retain the previous result or gives inconsistent result.
+
+Solution - To overcome this we need to restart the result pod and the application 
+will work fine.
+
+[root@ip-172-31-31-82 ec2-user]# kubectl delete po result-5d57b59f4b-gm9cr
+pod "result-5d57b59f4b-gm9cr" deleted
+
+[root@ip-172-31-31-82 ec2-user]# kubectl get po
+NAME                      READY   STATUS        RESTARTS   AGE
+db-b54cd94f4-2sk6r        2/2     Running       0          30s
+redis-868d64d78-m25dx     2/2     Running       0          125m
+result-5d57b59f4b-bsjr8   1/2     Running       0          5s
+result-5d57b59f4b-gm9cr   2/2     Terminating   0          64s
+vote-94849dc97-8d8fr      2/2     Running       0          15m
+worker-dd46d7584-kvp59    2/2     Running       2          12m
