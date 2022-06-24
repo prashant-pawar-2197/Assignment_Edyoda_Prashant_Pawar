@@ -1,3 +1,34 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Assignment No-1
+
+Q - Write a common use-case, where you will use a daemon set instead of replica set
+
+When we want to deploy atleast one pod on all the nodes, at that time we will go for daemon set instead of replica set.
+Replica set will replicate the pod instances on any nodes and there could be a situation that one node doesnot have any running instances of pod.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Assignment No-2
+
+Q - Suppose you have deployed your application using a deployment controller. Assume the initial number of replicas is one. Write the steps needed to update a container's image using deployment, making sure that there is zero downtime.
+Step 1 - First we'll check the current image used for creating the containers to be run on the pod, using the below command
+
+	kubectl describe pods
+
+Step 2 - To update the image of the application
+	kubectl set image <image name>
+	The command will notify the Deployment to use a different image for the app and will initiate a rolling update.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Assigmnet No-4 
+
+Q- VOTING APP - practical
+
+Step 1 - Cloned the repository and executed all the yaml file in the repository using the below command
+        kubectl apply -f .
+Step 2 - Getting all the available pods after executing all the yaml files
+
 [root@ip-172-31-31-82 ~]# kubectl get pods
 NAME                      READY   STATUS    RESTARTS   AGE
 db-b54cd94f4-vzznb        2/2     Running   0          95m
@@ -5,6 +36,8 @@ redis-868d64d78-m25dx     2/2     Running   0          104m
 result-5d57b59f4b-zm5km   2/2     Running   0          86m
 vote-94849dc97-29lq2      2/2     Running   0          101m
 worker-dd46d7584-qt8w5    2/2     Running   0          74m
+
+Step 3 - Now we will delete an instance of vote 
 
 [root@ip-172-31-31-82 ~]# kubectl delete po vote-94849dc97-7k64z
 pod "vote-94849dc97-7k64z" deleted
@@ -20,6 +53,8 @@ worker-dd46d7584-qt8w5    2/2     Running       0          79m
 OBSERVATION - Upon deleting the vote pod a new pod gets created and the application 
 works fine
 
+Step 4 - Now we will delete an instance of result
+
 [root@ip-172-31-31-82 ~]# kubectl delete po result-5d57b59f4b-zm5km
 pod "result-5d57b59f4b-zm5km" deleted
 [root@ip-172-31-31-82 ~]# kubectl get pods
@@ -33,6 +68,8 @@ worker-dd46d7584-qt8w5    2/2     Running       0          79m
 
 OBSERVATION - Upon deleting the result pod a new pod gets created and the application 
 works fine.
+
+Step 5 - Now we will delete an instance of worker
 
 [root@ip-172-31-31-82 ~]# kubectl delete po worker-dd46d7584-qt8w5
 pod "worker-dd46d7584-qt8w5" deleted
@@ -48,6 +85,8 @@ worker-dd46d7584-qt8w5    2/2     Terminating       0          82m
 OBSERVATION - Upon deleting the worker pod a new pod gets created and the application 
 works fine.
 
+Step 6 - Now we will delete an instance of db
+
 [root@ip-172-31-31-82 ~]# kubectl delete po db-b54cd94f4-vzznb
 pod "db-b54cd94f4-vzznb" deleted
 
@@ -62,10 +101,12 @@ worker-dd46d7584-kvp59    2/2     Running       0          2m28s
 [root@ip-172-31-31-82 ~]#
 
 OBSERVATION - Upon deleting the db pod a new pod gets created but the application 
-doesnot contain/retain the previous result or gives inconsistent result.
+doesnot contain/retain the previous result and gives inconsistent result.
 
 Solution - To overcome this we need to restart the result pod and the application 
 will work fine.
+
+Step - 7 Restarting the result pod
 
 [root@ip-172-31-31-82 ec2-user]# kubectl delete po result-5d57b59f4b-gm9cr
 pod "result-5d57b59f4b-gm9cr" deleted
